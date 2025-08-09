@@ -768,5 +768,53 @@
             fadeObserver.observe(element);
         });
     </script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script>
+        // Firebase config and initialization
+        const firebaseConfig = {
+            apiKey: "AIzaSyCElZNfQ94by_VijUyz7LYXHvPZ9b34VsM",
+            authDomain: "sos-app-1f9d0.firebaseapp.com",
+            projectId: "sos-app-1f9d0",
+            storageBucket: "sos-app-1f9d0.appspot.com",
+            messagingSenderId: "286584583203",
+            appId: "1:286584583203:web:1ca141d75473034a142d96"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // Contact form submission: Only store message in Firestore, do not send mail
+        document.addEventListener('DOMContentLoaded', function () {
+            const contactForm = document.querySelector('#contact form');
+            if (contactForm) {
+                contactForm.addEventListener('submit', async function (e) {
+                    e.preventDefault();
+                    const name = document.getElementById('name').value.trim();
+                    const email = document.getElementById('email').value.trim();
+                    const subject = document.getElementById('subject').value.trim();
+                    const message = document.getElementById('message').value.trim();
+
+                    if (!name || !email || !subject || !message) {
+                        alert('Please fill in all fields.');
+                        return;
+                    }
+
+                    try {
+                        await db.collection('messages').add({
+                            name,
+                            email,
+                            subject,
+                            message,
+                            timestamp: new Date()
+                        });
+                        alert('Message sent successfully!');
+                        contactForm.reset();
+                    } catch (err) {
+                        alert('Failed to send message. Please try again later.');
+                    }
+                });
+            }
+        });
+    </script>
 </body>
 </html>
